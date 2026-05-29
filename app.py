@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import pandas as pd
 import pickle
@@ -188,4 +188,4 @@ st.markdown("""
 - Scikit-learn
 - Random Forest
 """)
-```
+
