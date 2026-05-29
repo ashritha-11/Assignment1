@@ -33,18 +33,19 @@ model = load_model()
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-html, body, [class*="css"]  {
+html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif;
-    background-color: #0E1117;
+    background-color: #0B1120;
     color: white;
 }
 
-/* Main */
+/* Main Container */
 .block-container {
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     padding-bottom: 2rem;
+    max-width: 100%;
 }
 
 /* Sidebar */
@@ -53,49 +54,73 @@ section[data-testid="stSidebar"] {
     border-right: 1px solid #1F2937;
 }
 
-/* Title */
-.main-title {
-    font-size: 42px;
+/* Hide Streamlit Branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Header */
+.title {
+    font-size: 52px;
     font-weight: 700;
     color: white;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
-.sub-title {
-    color: #9CA3AF;
-    font-size: 16px;
+.subtitle {
+    font-size: 18px;
+    color: #94A3B8;
+    margin-top: -10px;
     margin-bottom: 30px;
-}
-
-/* Cards */
-.card {
-    background: linear-gradient(145deg, #161B22, #1C2333);
-    padding: 25px;
-    border-radius: 18px;
-    border: 1px solid #2D3748;
-    box-shadow: 0px 4px 25px rgba(0,0,0,0.35);
 }
 
 /* Metric Cards */
 .metric-card {
-    background: linear-gradient(145deg, #161B22, #1F2937);
-    padding: 18px;
-    border-radius: 18px;
+    background: linear-gradient(145deg, #111827, #1E293B);
+    padding: 30px 20px;
+    border-radius: 22px;
     text-align: center;
-    border: 1px solid #2D3748;
-    box-shadow: 0px 0px 15px rgba(0,0,0,0.25);
+    border: 1px solid #334155;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    transition: 0.3s;
 }
 
-/* Buttons */
+.metric-card:hover {
+    transform: translateY(-4px);
+}
+
+.metric-value {
+    font-size: 38px;
+    font-weight: 700;
+    color: white;
+}
+
+.metric-label {
+    font-size: 16px;
+    color: #CBD5E1;
+    margin-top: 8px;
+}
+
+/* Prediction Card */
+.result-card {
+    background: linear-gradient(145deg, #111827, #1E293B);
+    padding: 35px;
+    border-radius: 24px;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Button */
 .stButton > button {
     width: 100%;
-    height: 55px;
+    height: 58px;
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
     background: linear-gradient(to right, #00C853, #00E676);
     color: white;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 600;
+    margin-top: 10px;
     transition: 0.3s;
 }
 
@@ -107,16 +132,15 @@ section[data-testid="stSidebar"] {
 /* Inputs */
 div[data-baseweb="select"] > div,
 .stSlider,
-.stNumberInput,
-.stTextInput {
-    background-color: #1F2937 !important;
-    border-radius: 10px;
+.stNumberInput {
+    background-color: #1E293B !important;
+    border-radius: 12px;
 }
 
-/* Hide Streamlit Branding */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
+/* Progress */
+.stProgress > div > div > div {
+    background-color: #00E676;
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -125,21 +149,18 @@ header {visibility: hidden;}
 # HEADER
 # =========================================================
 
-st.markdown(
-    '<div class="main-title">📊 Employee Attrition Predictor</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="sub-title">AI-based workforce attrition risk analysis</div>',
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div class="title">📊 Employee Attrition Predictor</div>
+<div class="subtitle">
+AI-Powered Workforce Risk Analysis Dashboard
+</div>
+""", unsafe_allow_html=True)
 
 # =========================================================
-# SIDEBAR
+# SIDEBAR INPUTS
 # =========================================================
 
-st.sidebar.markdown("## Employee Details")
+st.sidebar.title("Employee Details")
 
 age = st.sidebar.slider("Age", 18, 60, 30)
 
@@ -164,7 +185,7 @@ distance_from_home = st.sidebar.slider(
 )
 
 total_working_years = st.sidebar.slider(
-    "Experience",
+    "Total Working Years",
     0,
     40,
     5
@@ -220,7 +241,7 @@ marital_mapping = {
 marital_status = marital_mapping[marital_status]
 
 # =========================================================
-# INPUT DATA
+# INPUT DATAFRAME
 # =========================================================
 
 input_data = pd.DataFrame([{
@@ -263,39 +284,39 @@ input_data = pd.DataFrame([{
 }])
 
 # =========================================================
-# DASHBOARD CARDS
+# TOP METRICS
 # =========================================================
 
-col1, col2, col3 = st.columns(3)
+c1, c2, c3 = st.columns(3)
 
-with col1:
+with c1:
     st.markdown(f"""
     <div class="metric-card">
-        <h3>₹ {monthly_income}</h3>
-        <p>Monthly Income</p>
+        <div class="metric-value">₹ {monthly_income}</div>
+        <div class="metric-label">Monthly Income</div>
     </div>
     """, unsafe_allow_html=True)
 
-with col2:
+with c2:
     st.markdown(f"""
     <div class="metric-card">
-        <h3>{job_satisfaction}/4</h3>
-        <p>Job Satisfaction</p>
+        <div class="metric-value">{job_satisfaction}/4</div>
+        <div class="metric-label">Job Satisfaction</div>
     </div>
     """, unsafe_allow_html=True)
 
-with col3:
+with c3:
     st.markdown(f"""
     <div class="metric-card">
-        <h3>{total_working_years} Years</h3>
-        <p>Experience</p>
+        <div class="metric-value">{total_working_years} Years</div>
+        <div class="metric-label">Experience</div>
     </div>
     """, unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 # =========================================================
-# PREDICTION
+# PREDICT BUTTON
 # =========================================================
 
 if st.button("Predict Attrition Risk"):
@@ -306,49 +327,58 @@ if st.button("Predict Attrition Risk"):
 
         probability = model.predict_proba(input_data)[0][1] * 100
 
-        # ==============================================
+        # =================================================
         # RISK LEVEL
-        # ==============================================
+        # =================================================
 
         if probability >= 70:
             risk = "🔴 HIGH RISK"
+            status = "Employee likely to leave"
 
         elif probability >= 40:
             risk = "🟠 MEDIUM RISK"
+            status = "Employee retention required"
 
         else:
             risk = "🟢 LOW RISK"
+            status = "Employee likely to stay"
 
-        # ==============================================
+        # =================================================
         # RESULTS
-        # ==============================================
+        # =================================================
 
         st.markdown("## Prediction Result")
 
-        r1, r2 = st.columns(2)
+        r1, r2 = st.columns([1.2, 1])
 
         with r1:
 
-            st.metric(
-                "Attrition Probability",
-                f"{probability:.2f}%"
-            )
+            st.markdown(f"""
+            <div class="result-card">
+                <h2 style="font-size:38px; color:white;">
+                    {probability:.2f}%
+                </h2>
+                <p style="font-size:18px; color:#CBD5E1;">
+                    Attrition Probability
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
 
             st.progress(int(probability))
 
         with r2:
 
             st.markdown(f"""
-            <div class="card">
-                <h2>{risk}</h2>
-                <p>Employee Risk Analysis</p>
+            <div class="result-card">
+                <h2 style="font-size:34px;">
+                    {risk}
+                </h2>
+
+                <p style="font-size:18px; color:#CBD5E1;">
+                    {status}
+                </p>
             </div>
             """, unsafe_allow_html=True)
-
-        if prediction == 1:
-            st.error("Employee likely to leave the organization.")
-        else:
-            st.success("Employee likely to stay.")
 
     except Exception as e:
 
