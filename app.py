@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -325,4 +325,4 @@ st.markdown("---")
 st.markdown(
     "Built with Streamlit • Scikit-Learn • Random Forest"
 )
-```
+
