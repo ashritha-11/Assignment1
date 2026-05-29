@@ -1,5 +1,4 @@
-```python id="a6m3qx"
-%%writefile app.py
+
 
 import streamlit as st
 import pandas as pd
@@ -206,4 +205,4 @@ st.markdown("""
 - Streamlit
 - Scikit-learn
 """)
-```
+
