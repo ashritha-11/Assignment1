@@ -1,7 +1,5 @@
-
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pickle
 import warnings
 
@@ -12,11 +10,21 @@ warnings.filterwarnings("ignore")
 # =========================================================
 
 st.set_page_config(
-    page_title="AI Employee Attrition Predictor",
+    page_title="Employee Attrition Predictor",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# =========================================================
+# LOAD MODEL
+# =========================================================
+
+@st.cache_resource
+def load_model():
+    return pickle.load(open("random_forest.pkl", "rb"))
+
+model = load_model()
 
 # =========================================================
 # CUSTOM CSS
@@ -25,84 +33,113 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-.main {
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+html, body, [class*="css"]  {
+    font-family: 'Poppins', sans-serif;
     background-color: #0E1117;
-}
-
-h1, h2, h3 {
     color: white;
 }
 
-.stButton>button {
-    width: 100%;
-    background: linear-gradient(to right, #4CAF50, #45a049);
-    color: white;
-    border-radius: 10px;
-    height: 3em;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
+/* Main */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
-.stButton>button:hover {
-    background: linear-gradient(to right, #45a049, #4CAF50);
-    color: white;
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: #111827;
+    border-right: 1px solid #1F2937;
 }
 
+/* Title */
+.main-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.sub-title {
+    color: #9CA3AF;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+/* Cards */
+.card {
+    background: linear-gradient(145deg, #161B22, #1C2333);
+    padding: 25px;
+    border-radius: 18px;
+    border: 1px solid #2D3748;
+    box-shadow: 0px 4px 25px rgba(0,0,0,0.35);
+}
+
+/* Metric Cards */
 .metric-card {
-    background-color: #1E1E1E;
-    padding: 20px;
-    border-radius: 15px;
+    background: linear-gradient(145deg, #161B22, #1F2937);
+    padding: 18px;
+    border-radius: 18px;
     text-align: center;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+    border: 1px solid #2D3748;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.25);
 }
 
-.sidebar .sidebar-content {
-    background-color: #111827;
+/* Buttons */
+.stButton > button {
+    width: 100%;
+    height: 55px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(to right, #00C853, #00E676);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    transition: 0.3s;
 }
+
+.stButton > button:hover {
+    transform: scale(1.02);
+    background: linear-gradient(to right, #00E676, #00C853);
+}
+
+/* Inputs */
+div[data-baseweb="select"] > div,
+.stSlider,
+.stNumberInput,
+.stTextInput {
+    background-color: #1F2937 !important;
+    border-radius: 10px;
+}
+
+/* Hide Streamlit Branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# LOAD MODEL
-# =========================================================
-
-@st.cache_resource
-def load_model():
-    model = pickle.load(open("random_forest.pkl", "rb"))
-    return model
-
-model = load_model()
-
-# =========================================================
 # HEADER
 # =========================================================
 
-st.markdown("""
-# 🚀 AI-Powered Employee Attrition Prediction System
-""")
+st.markdown(
+    '<div class="main-title">📊 Employee Attrition Predictor</div>',
+    unsafe_allow_html=True
+)
 
-st.markdown("""
-### Predict employee attrition risk using Machine Learning and HR Analytics
-""")
-
-st.markdown("---")
+st.markdown(
+    '<div class="sub-title">AI-based workforce attrition risk analysis</div>',
+    unsafe_allow_html=True
+)
 
 # =========================================================
 # SIDEBAR
 # =========================================================
 
-st.sidebar.image(
-    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-    width=120
-)
-
-st.sidebar.title("Employee Details")
-
-# =========================================================
-# USER INPUTS
-# =========================================================
+st.sidebar.markdown("## Employee Details")
 
 age = st.sidebar.slider("Age", 18, 60, 30)
 
@@ -127,7 +164,7 @@ distance_from_home = st.sidebar.slider(
 )
 
 total_working_years = st.sidebar.slider(
-    "Total Working Years",
+    "Experience",
     0,
     40,
     5
@@ -183,7 +220,7 @@ marital_mapping = {
 marital_status = marital_mapping[marital_status]
 
 # =========================================================
-# INPUT DATAFRAME
+# INPUT DATA
 # =========================================================
 
 input_data = pd.DataFrame([{
@@ -226,36 +263,42 @@ input_data = pd.DataFrame([{
 }])
 
 # =========================================================
-# MAIN DASHBOARD
+# DASHBOARD CARDS
 # =========================================================
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric(
-        label="Monthly Income",
-        value=f"₹ {monthly_income}"
-    )
+    st.markdown(f"""
+    <div class="metric-card">
+        <h3>₹ {monthly_income}</h3>
+        <p>Monthly Income</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col2:
-    st.metric(
-        label="Job Satisfaction",
-        value=job_satisfaction
-    )
+    st.markdown(f"""
+    <div class="metric-card">
+        <h3>{job_satisfaction}/4</h3>
+        <p>Job Satisfaction</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col3:
-    st.metric(
-        label="Work Experience",
-        value=f"{total_working_years} Years"
-    )
+    st.markdown(f"""
+    <div class="metric-card">
+        <h3>{total_working_years} Years</h3>
+        <p>Experience</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<br>", unsafe_allow_html=True)
 
 # =========================================================
-# PREDICTION BUTTON
+# PREDICTION
 # =========================================================
 
-if st.button("🔍 Predict Attrition Risk"):
+if st.button("Predict Attrition Risk"):
 
     try:
 
@@ -263,125 +306,50 @@ if st.button("🔍 Predict Attrition Risk"):
 
         probability = model.predict_proba(input_data)[0][1] * 100
 
-        # =================================================
+        # ==============================================
         # RISK LEVEL
-        # =================================================
+        # ==============================================
 
         if probability >= 70:
             risk = "🔴 HIGH RISK"
-            recommendation = """
-            - Immediate HR intervention required
-            - Consider salary revision
-            - Improve work-life balance
-            - Conduct employee counseling
-            """
 
         elif probability >= 40:
             risk = "🟠 MEDIUM RISK"
-            recommendation = """
-            - Monitor employee satisfaction
-            - Improve engagement activities
-            - Review workload management
-            """
 
         else:
             risk = "🟢 LOW RISK"
-            recommendation = """
-            - Employee is stable
-            - Continue engagement programs
-            - Maintain positive work culture
-            """
 
-        # =================================================
-        # RESULTS SECTION
-        # =================================================
+        # ==============================================
+        # RESULTS
+        # ==============================================
 
-        st.success("Prediction Completed Successfully")
+        st.markdown("## Prediction Result")
 
-        col1, col2 = st.columns(2)
+        r1, r2 = st.columns(2)
 
-        with col1:
-
-            st.markdown("## 📈 Prediction Probability")
+        with r1:
 
             st.metric(
-                label="Attrition Probability",
-                value=f"{probability:.2f}%"
+                "Attrition Probability",
+                f"{probability:.2f}%"
             )
 
             st.progress(int(probability))
 
-        with col2:
+        with r2:
 
-            st.markdown("## 🚨 Risk Category")
+            st.markdown(f"""
+            <div class="card">
+                <h2>{risk}</h2>
+                <p>Employee Risk Analysis</p>
+            </div>
+            """, unsafe_allow_html=True)
 
-            st.info(risk)
-
-            if prediction == 1:
-                st.error("Employee likely to leave the organization.")
-            else:
-                st.success("Employee likely to stay.")
-
-        st.markdown("---")
-
-        # =================================================
-        # HR RECOMMENDATIONS
-        # =================================================
-
-        st.markdown("## 💡 HR Recommendations")
-
-        st.markdown(recommendation)
-
-        # =================================================
-        # EMPLOYEE SUMMARY
-        # =================================================
-
-        st.markdown("## 👨‍💼 Employee Summary")
-
-        summary_df = pd.DataFrame({
-
-            "Feature": [
-                "Age",
-                "Monthly Income",
-                "Job Satisfaction",
-                "Distance From Home",
-                "Years At Company",
-                "OverTime"
-            ],
-
-            "Value": [
-                age,
-                monthly_income,
-                job_satisfaction,
-                distance_from_home,
-                years_at_company,
-                "Yes" if overtime == 1 else "No"
-            ]
-        })
-
-        st.dataframe(
-            summary_df,
-            use_container_width=True
-        )
+        if prediction == 1:
+            st.error("Employee likely to leave the organization.")
+        else:
+            st.success("Employee likely to stay.")
 
     except Exception as e:
 
         st.error(f"Prediction Error: {e}")
-
-# =========================================================
-# FOOTER
-# =========================================================
-
-st.markdown("---")
-
-st.markdown("""
-<center>
-
-### 📊 AI Employee Attrition Prediction System
-
-Built using:
-Python • Streamlit • Scikit-Learn • Random Forest
-
-</center>
-""", unsafe_allow_html=True)
-
