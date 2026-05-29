@@ -1,4 +1,4 @@
-
+```python
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,26 +12,24 @@ warnings.filterwarnings("ignore")
 # =========================================================
 
 st.set_page_config(
-    page_title="Employee Attrition Predictor",
+    page_title="AI Employee Attrition Predictor",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # =========================================================
-# LOAD FILES
+# LOAD MODEL
 # =========================================================
 
 @st.cache_resource
-def load_files():
+def load_model():
 
     model = joblib.load("random_forest.pkl")
 
-    features = joblib.load("features.pkl")
+    return model
 
-    return model, features
-
-model, features = load_files()
+model = load_model()
 
 # =========================================================
 # CUSTOM CSS
@@ -54,17 +52,17 @@ section[data-testid="stSidebar"] * {
 
 .stButton>button {
     width: 100%;
-    background: linear-gradient(to right, #4CAF50, #00c853);
+    background: linear-gradient(to right, #00c853, #00e676);
     color: white;
     border-radius: 12px;
-    height: 3.2em;
+    height: 3.3em;
     font-size: 18px;
     font-weight: bold;
     border: none;
 }
 
 .stButton>button:hover {
-    background: linear-gradient(to right, #00c853, #4CAF50);
+    background: linear-gradient(to right, #00e676, #00c853);
 }
 
 .metric-card {
@@ -72,6 +70,10 @@ section[data-testid="stSidebar"] * {
     padding: 20px;
     border-radius: 15px;
     text-align: center;
+}
+
+h1, h2, h3 {
+    color: white;
 }
 
 </style>
@@ -104,9 +106,9 @@ age = st.sidebar.slider(
 
 monthly_income = st.sidebar.number_input(
     "Monthly Income",
-    1000,
-    50000,
-    5000
+    min_value=1000,
+    max_value=50000,
+    value=5000
 )
 
 job_satisfaction = st.sidebar.slider(
@@ -156,10 +158,10 @@ overtime = 1 if overtime == "Yes" else 0
 gender = 1 if gender == "Male" else 0
 
 # =========================================================
-# DEFAULT VALUES
+# EXACT TRAINING COLUMNS
 # =========================================================
 
-default_values = {
+input_data = pd.DataFrame([{
 
     'Age': age,
     'BusinessTravel': 1,
@@ -168,6 +170,8 @@ default_values = {
     'DistanceFromHome': distance_from_home,
     'Education': 3,
     'EducationField': 1,
+    'EmployeeCount': 1,
+    'EmployeeNumber': 1,
     'EnvironmentSatisfaction': 3,
     'Gender': gender,
     'HourlyRate': 60,
@@ -179,10 +183,12 @@ default_values = {
     'MonthlyIncome': monthly_income,
     'MonthlyRate': 12000,
     'NumCompaniesWorked': 2,
+    'Over18': 1,
     'OverTime': overtime,
     'PercentSalaryHike': 12,
     'PerformanceRating': 3,
     'RelationshipSatisfaction': 3,
+    'StandardHours': 80,
     'StockOptionLevel': 1,
     'TotalWorkingYears': total_working_years,
     'TrainingTimesLastYear': 2,
@@ -191,31 +197,8 @@ default_values = {
     'YearsInCurrentRole': 3,
     'YearsSinceLastPromotion': 1,
     'YearsWithCurrManager': 3
-}
 
-# =========================================================
-# MATCH TRAINING FEATURES
-# =========================================================
-
-final_input = {}
-
-for feature in features:
-
-    if feature in default_values:
-
-        final_input[feature] = default_values[feature]
-
-    else:
-
-        final_input[feature] = 0
-
-# =========================================================
-# INPUT DATAFRAME
-# =========================================================
-
-input_data = pd.DataFrame([final_input])
-
-input_data = input_data[features]
+}])
 
 # =========================================================
 # DASHBOARD METRICS
@@ -268,13 +251,25 @@ if st.button("Predict Attrition"):
 
             risk = "🔴 HIGH RISK"
 
+            recommendation = """
+            Immediate HR intervention required.
+            """
+
         elif probability >= 40:
 
             risk = "🟠 MEDIUM RISK"
 
+            recommendation = """
+            Employee engagement monitoring recommended.
+            """
+
         else:
 
             risk = "🟢 LOW RISK"
+
+            recommendation = """
+            Employee appears stable.
+            """
 
         # =================================================
         # RESULTS
@@ -300,14 +295,22 @@ if st.button("Predict Attrition"):
             if prediction == 1:
 
                 st.error(
-                    "Employee likely to leave."
+                    "Employee likely to leave the organization."
                 )
 
             else:
 
                 st.info(
-                    "Employee likely to stay."
+                    "Employee likely to stay in the organization."
                 )
+
+        # =================================================
+        # HR RECOMMENDATION
+        # =================================================
+
+        st.markdown("## HR Recommendation")
+
+        st.write(recommendation)
 
     except Exception as e:
 
@@ -320,6 +323,6 @@ if st.button("Predict Attrition"):
 st.markdown("---")
 
 st.markdown(
-    "Built with Streamlit and Random Forest"
+    "Built with Streamlit • Scikit-Learn • Random Forest"
 )
-
+```
