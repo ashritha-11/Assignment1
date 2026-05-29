@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -384,4 +384,4 @@ Python • Streamlit • Scikit-Learn • Random Forest
 
 </center>
 """, unsafe_allow_html=True)
-```
+
