@@ -27,7 +27,7 @@ def load_model():
 model = load_model()
 
 # =========================================================
-# CSS
+# CUSTOM CSS
 # =========================================================
 
 st.markdown("""
@@ -41,66 +41,82 @@ html, body, [class*="css"] {
     color: white;
 }
 
-/* MAIN */
-.block-container {
-    padding-top: 1.5rem;
+/* Main Area */
+.main .block-container {
+    padding-top: 2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
-/* SIDEBAR */
-[data-testid="stSidebar"] {
-    background-color: #111827;
-    min-width: 320px;
-    max-width: 320px;
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: #111827;
+    width: 330px !important;
+    min-width: 330px !important;
     border-right: 1px solid #1F2937;
 }
 
-/* SIDEBAR TEXT */
-[data-testid="stSidebar"] * {
-    color: white;
+/* Sidebar Text */
+section[data-testid="stSidebar"] * {
+    color: white !important;
 }
 
-/* TITLE */
+/* Sidebar Header */
+.sidebar-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Main Title */
 .main-title {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: 700;
     color: white;
+    margin-bottom: 10px;
 }
 
+/* Subtitle */
 .sub-title {
-    color: #94A3B8;
     font-size: 18px;
-    margin-bottom: 30px;
+    color: #94A3B8;
+    margin-bottom: 40px;
 }
 
-/* CARDS */
+/* Metric Cards */
 .metric-card {
     background: linear-gradient(145deg, #111827, #1E293B);
     padding: 30px;
-    border-radius: 22px;
+    border-radius: 20px;
     text-align: center;
     border: 1px solid #334155;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.4);
 }
 
+/* Metric Value */
 .metric-value {
-    font-size: 36px;
+    font-size: 38px;
     font-weight: 700;
+    color: white;
 }
 
+/* Metric Label */
 .metric-label {
     color: #CBD5E1;
     margin-top: 8px;
+    font-size: 16px;
 }
 
-/* RESULT CARD */
+/* Result Card */
 .result-card {
     background: linear-gradient(145deg, #111827, #1E293B);
-    padding: 30px;
-    border-radius: 20px;
+    padding: 35px;
+    border-radius: 22px;
     border: 1px solid #334155;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.35);
 }
 
-/* BUTTON */
+/* Button */
 .stButton > button {
     width: 100%;
     height: 58px;
@@ -110,13 +126,20 @@ html, body, [class*="css"] {
     color: white;
     font-size: 18px;
     font-weight: 600;
+    transition: 0.3s;
 }
 
 .stButton > button:hover {
+    transform: scale(1.02);
     background: linear-gradient(to right, #00E676, #00C853);
 }
 
-/* HIDE STREAMLIT */
+/* Inputs */
+.stSlider, .stSelectbox {
+    padding-bottom: 10px;
+}
+
+/* Hide Streamlit Branding */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
@@ -128,15 +151,17 @@ header {visibility: hidden;}
 # HEADER
 # =========================================================
 
-st.markdown(
-    '<div class="main-title">📊 Employee Attrition Predictor</div>',
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div class="main-title">
+📊 Employee Attrition Predictor
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown(
-    '<div class="sub-title">AI Workforce Risk Analysis Dashboard</div>',
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div class="sub-title">
+AI-Powered Workforce Attrition Analysis Dashboard
+</div>
+""", unsafe_allow_html=True)
 
 # =========================================================
 # SIDEBAR
@@ -144,9 +169,18 @@ st.markdown(
 
 with st.sidebar:
 
-    st.title("Employee Details")
+    st.markdown("""
+    <div class="sidebar-title">
+    Employee Details
+    </div>
+    """, unsafe_allow_html=True)
 
-    age = st.slider("Age", 18, 60, 30)
+    age = st.slider(
+        "Age",
+        18,
+        60,
+        30
+    )
 
     monthly_income = st.slider(
         "Monthly Income",
@@ -157,7 +191,7 @@ with st.sidebar:
 
     job_satisfaction = st.select_slider(
         "Job Satisfaction",
-        options=[1,2,3,4],
+        options=[1, 2, 3, 4],
         value=2
     )
 
@@ -169,7 +203,7 @@ with st.sidebar:
     )
 
     total_working_years = st.slider(
-        "Experience",
+        "Total Working Years",
         0,
         40,
         5
@@ -188,12 +222,13 @@ with st.sidebar:
     )
 
 # =========================================================
-# METRICS
+# DASHBOARD CARDS
 # =========================================================
 
-c1, c2, c3 = st.columns(3)
+col1, col2, col3 = st.columns(3)
 
-with c1:
+with col1:
+
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-value">₹ {monthly_income}</div>
@@ -201,7 +236,8 @@ with c1:
     </div>
     """, unsafe_allow_html=True)
 
-with c2:
+with col2:
+
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-value">{job_satisfaction}/4</div>
@@ -209,7 +245,8 @@ with c2:
     </div>
     """, unsafe_allow_html=True)
 
-with c3:
+with col3:
+
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-value">{total_working_years} Years</div>
@@ -220,7 +257,7 @@ with c3:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # =========================================================
-# INPUT DATA
+# INPUT DATAFRAME
 # =========================================================
 
 overtime = 1 if overtime == "Yes" else 0
@@ -270,37 +307,50 @@ input_data = pd.DataFrame([{
 
 if st.button("Predict Attrition Risk"):
 
-    prediction = model.predict(input_data)[0]
+    try:
 
-    probability = model.predict_proba(input_data)[0][1] * 100
+        prediction = model.predict(input_data)[0]
 
-    if probability >= 70:
-        risk = "🔴 HIGH RISK"
+        probability = model.predict_proba(input_data)[0][1] * 100
 
-    elif probability >= 40:
-        risk = "🟠 MEDIUM RISK"
+        if probability >= 70:
+            risk = "🔴 HIGH RISK"
 
-    else:
-        risk = "🟢 LOW RISK"
+        elif probability >= 40:
+            risk = "🟠 MEDIUM RISK"
 
-    r1, r2 = st.columns(2)
+        else:
+            risk = "🟢 LOW RISK"
 
-    with r1:
+        st.markdown("## Prediction Result")
 
-        st.markdown(f"""
-        <div class="result-card">
-            <h1>{probability:.2f}%</h1>
-            <p>Attrition Probability</p>
-        </div>
-        """, unsafe_allow_html=True)
+        r1, r2 = st.columns(2)
 
-        st.progress(int(probability))
+        with r1:
 
-    with r2:
+            st.markdown(f"""
+            <div class="result-card">
+                <h1>{probability:.2f}%</h1>
+                <p>Attrition Probability</p>
+            </div>
+            """, unsafe_allow_html=True)
 
-        st.markdown(f"""
-        <div class="result-card">
-            <h1>{risk}</h1>
-            <p>Employee Risk Analysis</p>
-        </div>
-        """, unsafe_allow_html=True)
+            st.progress(int(probability))
+
+        with r2:
+
+            st.markdown(f"""
+            <div class="result-card">
+                <h1>{risk}</h1>
+                <p>Employee Risk Analysis</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        if prediction == 1:
+            st.error("Employee likely to leave the organization.")
+        else:
+            st.success("Employee likely to stay.")
+
+    except Exception as e:
+
+        st.error(f"Prediction Error: {e}")
