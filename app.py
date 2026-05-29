@@ -1,11 +1,12 @@
-
+```python
 import streamlit as st
 import pandas as pd
 import pickle
+import numpy as np
 
-# =========================
+# ==========================================
 # PAGE CONFIG
-# =========================
+# ==========================================
 
 st.set_page_config(
     page_title="Employee Attrition Predictor",
@@ -13,15 +14,15 @@ st.set_page_config(
     layout="wide"
 )
 
-# =========================
+# ==========================================
 # LOAD MODEL
-# =========================
+# ==========================================
 
 model = pickle.load(open("random_forest.pkl", "rb"))
 
-# =========================
+# ==========================================
 # TITLE
-# =========================
+# ==========================================
 
 st.title("🚀 AI Employee Attrition Prediction System")
 
@@ -29,9 +30,9 @@ st.markdown(
     "Predict employee attrition risk using Machine Learning."
 )
 
-# =========================
+# ==========================================
 # SIDEBAR INPUTS
-# =========================
+# ==========================================
 
 st.sidebar.header("Employee Information")
 
@@ -82,61 +83,69 @@ gender = st.sidebar.selectbox(
     ["Male", "Female"]
 )
 
-# =========================
+# ==========================================
 # ENCODING
-# =========================
+# ==========================================
 
 overtime = 1 if overtime == "Yes" else 0
-
 gender = 1 if gender == "Male" else 0
 
-# =========================
-# INPUT DATAFRAME
-# =========================
+# ==========================================
+# CREATE FULL FEATURE DATA
+# ==========================================
 
-input_data = pd.DataFrame({
+input_data = pd.DataFrame([{
 
-    'Age': [age],
-    'BusinessTravel': [1],
-    'DailyRate': [1100],
-    'Department': [1],
-    'DistanceFromHome': [distance_from_home],
-    'Education': [3],
-    'EducationField': [1],
-    'EnvironmentSatisfaction': [3],
-    'Gender': [gender],
-    'HourlyRate': [60],
-    'JobInvolvement': [3],
-    'JobLevel': [2],
-    'JobRole': [2],
-    'JobSatisfaction': [job_satisfaction],
-    'MaritalStatus': [1],
-    'MonthlyIncome': [monthly_income],
-    'MonthlyRate': [12000],
-    'NumCompaniesWorked': [2],
-    'OverTime': [overtime],
-    'PercentSalaryHike': [12],
-    'PerformanceRating': [3],
-    'RelationshipSatisfaction': [3],
-    'StockOptionLevel': [1],
-    'TotalWorkingYears': [total_working_years],
-    'TrainingTimesLastYear': [2],
-    'WorkLifeBalance': [3],
-    'YearsAtCompany': [years_at_company],
-    'YearsInCurrentRole': [3],
-    'YearsSinceLastPromotion': [1],
-    'YearsWithCurrManager': [3]
-})
+    'Age': age,
+    'BusinessTravel': 1,
+    'DailyRate': 1100,
+    'Department': 1,
+    'DistanceFromHome': distance_from_home,
+    'Education': 3,
+    'EducationField': 1,
+    'EmployeeCount': 1,
+    'EmployeeNumber': 1,
+    'EnvironmentSatisfaction': 3,
+    'Gender': gender,
+    'HourlyRate': 60,
+    'JobInvolvement': 3,
+    'JobLevel': 2,
+    'JobRole': 2,
+    'JobSatisfaction': job_satisfaction,
+    'MaritalStatus': 1,
+    'MonthlyIncome': monthly_income,
+    'MonthlyRate': 12000,
+    'NumCompaniesWorked': 2,
+    'Over18': 1,
+    'OverTime': overtime,
+    'PercentSalaryHike': 12,
+    'PerformanceRating': 3,
+    'RelationshipSatisfaction': 3,
+    'StandardHours': 80,
+    'StockOptionLevel': 1,
+    'TotalWorkingYears': total_working_years,
+    'TrainingTimesLastYear': 2,
+    'WorkLifeBalance': 3,
+    'YearsAtCompany': years_at_company,
+    'YearsInCurrentRole': 3,
+    'YearsSinceLastPromotion': 1,
+    'YearsWithCurrManager': 3
 
-# =========================
-# PREDICTION BUTTON
-# =========================
+}])
+
+# ==========================================
+# PREDICTION
+# ==========================================
 
 if st.button("Predict Attrition"):
 
     prediction = model.predict(input_data)[0]
 
     probability = model.predict_proba(input_data)[0][1] * 100
+
+    # ======================================
+    # RISK LEVEL
+    # ======================================
 
     if probability >= 70:
         risk = "🔴 HIGH RISK"
@@ -146,6 +155,10 @@ if st.button("Predict Attrition"):
 
     else:
         risk = "🟢 LOW RISK"
+
+    # ======================================
+    # DISPLAY RESULTS
+    # ======================================
 
     st.subheader("Prediction Result")
 
@@ -157,11 +170,22 @@ if st.button("Predict Attrition"):
     st.success(f"Risk Level: {risk}")
 
     if prediction == 1:
-        st.error("Employee likely to leave.")
+        st.error("Employee likely to leave the company.")
     else:
         st.info("Employee likely to stay.")
 
+# ==========================================
+# FOOTER
+# ==========================================
+
 st.markdown("---")
 
-st.markdown("Built with Streamlit and Random Forest")
+st.markdown("""
+### 📌 Technologies Used
 
+- Python
+- Streamlit
+- Scikit-learn
+- Random Forest
+""")
+```
